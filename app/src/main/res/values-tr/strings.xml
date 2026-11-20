@@ -154,9 +154,9 @@
     <string name="you_cannot_remove_this_preset">Bu ön ayarı kaldıramazsınız</string>
     <string name="you_cannot_remove_this_component_version">Bu bileşen sürümünü kaldıramazsınız</string>
     <string name="dxwrapper_help_content"><![CDATA[
-        <i><b>WineD3D</b></i>, DirectX 1-11'i OpenGL'e çeviren bir çeviri katmanıdır.<br /><br />
-        <i><b>DXVK</b></i>, Direct3D 9-11'i Vulkan'a çeviren bir çeviri katmanıdır.<br /><br />
-        <i><b>VKD3D</b></i>, Direct3D 12 API'sini Vulkan'a çeviren bir çeviri katmanıdır.<br /><br />
+        <i><b>WineD3D</b></i>, DirectX 1-11\'i OpenGL\'e çeviren bir çeviri katmanıdır.<br /><br />
+        <i><b>DXVK</b></i>, Direct3D 9-11\'i Vulkan\'a çeviren bir çeviri katmanıdır.<br /><br />
+        <i><b>VKD3D</b></i>, Direct3D 12 API\'sini Vulkan\'a çeviren bir çeviri katmanıdır.<br /><br />
         <i><b>CNC DDraw</b></i>, klasik oyunlarla daha iyi uyumluluk için DirectDraw uygulamasıdır.
     ]]></string>
     <string name="columns">Sütunlar</string>

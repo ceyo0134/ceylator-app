@@ -21,7 +21,7 @@ import java.io.File;
 public abstract class WineThemeManager {
     public enum Theme {LIGHT, DARK}
     public enum BackgroundType {IMAGE, COLOR}
-    public static final String DEFAULT_DESKTOP_THEME = Theme.LIGHT+","+BackgroundType.IMAGE+",#0277bd";
+    public static final String DEFAULT_DESKTOP_THEME = Theme.DARK+","+BackgroundType.COLOR+",#000000";
     public static final String DEFAULT_WALLPAPER_ID = "wallpaper-1";
 
     public static class ThemeInfo {

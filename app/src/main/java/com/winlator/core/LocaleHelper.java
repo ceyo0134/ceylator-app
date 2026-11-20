@@ -38,14 +38,8 @@ public class LocaleHelper {
     }
 
     public static void setEnvVars(EnvVars envVars) {
-        Locale locale = Locale.getDefault();
-        for (String name : supportedLocales) {
-            if (locale.toString().startsWith(name.substring(0, 2))) {
-                envVars.put("LC_ALL", name+".UTF-8");
-                return;
-            }
-        }
-
+        // The app language only affects the interface; the Windows environment always uses en_US,
+        // because the rootfs does not ship locale data for every UI language.
         envVars.put("LC_ALL", "en_US.UTF-8");
     }
 }

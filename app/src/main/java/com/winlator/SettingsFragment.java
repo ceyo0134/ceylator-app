@@ -456,7 +456,7 @@ public class SettingsFragment extends Fragment {
         dialog.setIcon(R.drawable.icon_wine);
 
         EditText etVersion = dialog.findViewById(R.id.ETVersion);
-        etVersion.setText("Wine "+wineInfo.version+(wineInfo.subversion != null ? " ("+wineInfo.subversion+")" : ""));
+        etVersion.setText("Cine "+wineInfo.version+(wineInfo.subversion != null ? " ("+wineInfo.subversion+")" : ""));
 
         final EditText etSize = dialog.findViewById(R.id.ETSize);
         final AtomicLong totalSizeRef = new AtomicLong();

@@ -1036,11 +1036,24 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
     }
 
     private ScreenInfo resolveScreenInfo(String value) {
-        if (!value.equals("native")) return new ScreenInfo(value);
+        int deviceWidth = AppUtils.getScreenWidth();
+        int deviceHeight = AppUtils.getScreenHeight();
+        if (value.equals("native")) {
+            return new ScreenInfo(deviceWidth - (deviceWidth % 2), deviceHeight - (deviceHeight % 2));
+        }
 
-        int width = AppUtils.getScreenWidth();
-        int height = AppUtils.getScreenHeight();
-        return new ScreenInfo(width - (width % 2), height - (height % 2));
+        ScreenInfo requested = new ScreenInfo(value);
+        if (requested.width <= 0 || requested.height <= 0 || deviceWidth <= 0 || deviceHeight <= 0) return requested;
+
+        // Resolution only changes the pixel count: keep the device aspect ratio so the image always fills the screen
+        float longSide = Math.max(deviceWidth, deviceHeight), shortSide = Math.min(deviceWidth, deviceHeight);
+        float deviceAspect = requested.width >= requested.height ? longSide / shortSide : shortSide / longSide;
+        float pixels = (float)requested.width * requested.height;
+        int height = (int)Math.round(Math.sqrt(pixels / deviceAspect));
+        int width = (int)Math.round(height * deviceAspect);
+        height -= height % 2;
+        width -= width % 2;
+        return new ScreenInfo(Math.max(width, 2), Math.max(height, 2));
     }
 
     public String getWinComponents() {

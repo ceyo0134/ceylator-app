@@ -56,7 +56,7 @@
     <string name="enabled">Enabled</string>
     <string name="disabled">Disabled</string>
     <string name="container">Container</string>
-    <string name="screen_size">Screen Size</string>
+    <string name="screen_size">Screen Resolution</string>
     <string name="new_environment_variable">New Environment Variable</string>
     <string name="environment_variables">Environment Variables</string>
     <string name="value">Value</string>

@@ -56,7 +56,7 @@
     <string name="enabled">Etkin</string>
     <string name="disabled">Devre Dışı</string>
     <string name="container">Konteyner</string>
-    <string name="screen_size">Ekran Boyutu</string>
+    <string name="screen_size">Ekran Çözünürlüğü</string>
     <string name="new_environment_variable">Yeni Ortam Değişkeni</string>
     <string name="environment_variables">Ortam Değişkenleri</string>
     <string name="value">Değer</string>

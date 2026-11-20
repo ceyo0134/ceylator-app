@@ -26,7 +26,14 @@ jobs:
       - name: Build debug APK
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          set +e
+          ./gradlew assembleDebug --no-daemon --stacktrace > build.log 2>&1
+          rc=$?
+          if [ $rc -ne 0 ]; then
+            grep -nE "error:|What went wrong|FAILED|Execution failed|Caused by|not found|No such|undefined reference" build.log | head -15 | while IFS= read -r l; do echo "::error::${l:0:400}"; done
+            tail -n 12 build.log | while IFS= read -r l; do echo "::warning::${l:0:300}"; done
+          fi
+          exit $rc
 
       - uses: actions/upload-artifact@v4
         with:

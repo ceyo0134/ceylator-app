@@ -67,6 +67,7 @@ import com.winlator.inputcontrols.ExternalController;
 import com.winlator.inputcontrols.InputControlsManager;
 import com.winlator.math.Mathf;
 import com.winlator.renderer.GLRenderer;
+import com.winlator.renderer.Texture;
 import com.winlator.services.ForegroundService;
 import com.winlator.widget.FrameRating;
 import com.winlator.widget.InputControlsView;
@@ -148,6 +149,8 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
 
         final PreloaderDialog preloaderDialog = new PreloaderDialog(this);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean pixelatedScaling = preferences.getBoolean("pixelated_scaling", true) && preferences.getInt("render_resolution_scale", 100) < 100;
+        Texture.setDefaultFilter(pixelatedScaling ? android.opengl.GLES20.GL_NEAREST : android.opengl.GLES20.GL_LINEAR);
         boolean useAndroidClipboardOnWine = preferences.getBoolean("use_android_clipboard_on_wine", false);
         clipboardManager = useAndroidClipboardOnWine ? (ClipboardManager)getSystemService(CLIPBOARD_SERVICE) : null;
 
@@ -1036,11 +1039,21 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
     }
 
     private ScreenInfo resolveScreenInfo(String value) {
-        if (!value.equals("native")) return new ScreenInfo(value);
+        ScreenInfo base;
+        if (!value.equals("native")) base = new ScreenInfo(value);
+        else {
+            int width = AppUtils.getScreenWidth();
+            int height = AppUtils.getScreenHeight();
+            base = new ScreenInfo(width - (width % 2), height - (height % 2));
+        }
 
-        int width = AppUtils.getScreenWidth();
-        int height = AppUtils.getScreenHeight();
-        return new ScreenInfo(width - (width % 2), height - (height % 2));
+        int scalePercent = preferences.getInt("render_resolution_scale", 100);
+        if (scalePercent >= 100) return base;
+
+        float scale = Math.max(scalePercent, 10) / 100.0f;
+        int width = Math.max(ScreenInfo.MIN_WIDTH, Math.round(base.width * scale / 2.0f) * 2);
+        int height = Math.max(ScreenInfo.MIN_HEIGHT, Math.round(base.height * scale / 2.0f) * 2);
+        return new ScreenInfo(width, height);
     }
 
     public String getWinComponents() {

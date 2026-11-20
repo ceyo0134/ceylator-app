@@ -9,11 +9,17 @@ import com.winlator.xserver.Drawable;
 import java.nio.ByteBuffer;
 
 public class Texture {
+    private static int defaultFilter = GLES20.GL_LINEAR;
+
+    public static void setDefaultFilter(int filter) {
+        defaultFilter = filter;
+    }
+
     protected int textureId = 0;
     protected int wrapS = GLES20.GL_CLAMP_TO_EDGE;
     protected int wrapT = GLES20.GL_CLAMP_TO_EDGE;
-    protected int magFilter = GLES20.GL_LINEAR;
-    protected int minFilter = GLES20.GL_LINEAR;
+    protected int magFilter = defaultFilter;
+    protected int minFilter = defaultFilter;
     protected int format = GLES11Ext.GL_BGRA;
     protected boolean needsUpdate = true;
     private boolean flipY = false;

@@ -359,4 +359,8 @@
     <string name="fgs_notification_content_else">Ceylator is running in the background</string>
     <string name="save_mem_on_run_from_steam">Save memory on run from Steam</string>
     <string name="present_mode">Present Mode</string>
+    <string name="display">Display</string>
+    <string name="render_resolution">Render Resolution</string>
+    <string name="render_resolution_hint">Lower values make the game render at fewer pixels and stretch to your screen. Much faster, but the picture gets blockier. 100% = full resolution.</string>
+    <string name="pixelated_scaling">Pixel-perfect scaling (sharp blocky pixels instead of blur)</string>
 </resources>

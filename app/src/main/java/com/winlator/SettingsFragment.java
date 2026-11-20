@@ -197,6 +197,12 @@ public class SettingsFragment extends Fragment {
         final SeekBar sbCursorSize = view.findViewById(R.id.SBCursorSize);
         sbCursorSize.setValue(preferences.getFloat("cursor_scale", 1.0f) * 100);
 
+        final SeekBar sbRenderResolution = view.findViewById(R.id.SBRenderResolution);
+        sbRenderResolution.setValue(preferences.getInt("render_resolution_scale", 100));
+
+        final CheckBox cbPixelatedScaling = view.findViewById(R.id.CBPixelatedScaling);
+        cbPixelatedScaling.setChecked(preferences.getBoolean("pixelated_scaling", true));
+
         final ColorPickerView cpvCursorColor = view.findViewById(R.id.CPVCursorColor);
         cpvCursorColor.setPalette(0xffffff, 0x000000, 0x651fff, 0xffea00, 0xff9100, 0xf50057, 0x00b0ff, 0x1de9b6);
         cpvCursorColor.setColor(preferences.getInt("cursor_color", 0xffffff));
@@ -231,6 +237,8 @@ public class SettingsFragment extends Fragment {
             editor.putFloat("cursor_speed", sbCursorSpeed.getValue() / 100.0f);
             editor.putFloat("cursor_scale", sbCursorSize.getValue() / 100.0f);
             editor.putInt("cursor_color", cpvCursorColor.getColor());
+            editor.putInt("render_resolution_scale", Math.round(sbRenderResolution.getValue()));
+            editor.putBoolean("pixelated_scaling", cbPixelatedScaling.isChecked());
             editor.putBoolean("enable_wine_debug", cbEnableWineDebug.isChecked());
             editor.putInt("box64_logs", sBox64Logs.getSelectedItemPosition());
             editor.putBoolean("save_logs_to_file", cbSaveLogsToFile.isChecked());

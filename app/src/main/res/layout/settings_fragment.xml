@@ -22,6 +22,46 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:text="@string/render_resolution"/>
+
+                    <com.winlator.widget.SeekBar
+                        android:id="@+id/SBRenderResolution"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:suffix="%"
+                        app:step="5"
+                        app:minValue="15"
+                        app:maxValue="100" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textSize="13sp"
+                        android:textColor="?attr/colorSecondaryText"
+                        android:text="@string/render_resolution_hint"/>
+
+                    <CheckBox
+                        android:id="@+id/CBPixelatedScaling"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/pixelated_scaling" />
+                </LinearLayout>
+
+                <TextView
+                    style="@style/FieldSetLabel"
+                    android:text="@string/display" />
+            </FrameLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout style="@style/FieldSet">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:text="@string/cursor_speed"/>
 
                     <com.winlator.widget.SeekBar

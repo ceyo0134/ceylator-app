@@ -34,7 +34,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
-import com.google.android.material.navigation.NavigationView;
 import com.winlator.box64.Box64EditPresetDialog;
 import com.winlator.box64.Box64Preset;
 import com.winlator.box64.Box64PresetManager;
@@ -272,8 +271,7 @@ public class SettingsFragment extends Fragment {
 
             if (editor.commit()) {
                 if (!restartApp) {
-                    NavigationView navigationView = getActivity().findViewById(R.id.NavigationView);
-                    navigationView.setCheckedItem(R.id.menu_item_containers);
+                    ((MainActivity)getActivity()).setSelectedNavItem(R.id.menu_item_containers);
                     FragmentManager fragmentManager = getParentFragmentManager();
                     fragmentManager.beginTransaction()
                         .replace(R.id.FLFragmentContainer, new ContainersFragment())

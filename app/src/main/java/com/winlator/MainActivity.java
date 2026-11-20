@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.IntRange;
 import androidx.annotation.NonNull;
@@ -18,13 +19,10 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.preference.PreferenceManager;
 
-import com.google.android.material.navigation.NavigationView;
 import com.winlator.contentdialog.AboutDialog;
 import com.winlator.core.AppUtils;
 import com.winlator.core.Callback;
@@ -32,14 +30,15 @@ import com.winlator.core.LocaleHelper;
 import com.winlator.core.PreloaderDialog;
 import com.winlator.xenvironment.RootFSInstaller;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
     public static final boolean DEBUG_MODE = false; // FIXME change to false
     public static final @IntRange(from = 1, to = 19) byte CONTAINER_PATTERN_COMPRESSION_LEVEL = 9;
     public static final byte PERMISSION_WRITE_EXTERNAL_STORAGE_REQUEST_CODE = 1;
     public static final byte OPEN_FILE_REQUEST_CODE = 2;
     public static final byte EDIT_INPUT_CONTROLS_REQUEST_CODE = 3;
     public static final byte OPEN_DIRECTORY_REQUEST_CODE = 4;
-    private DrawerLayout drawerLayout;
+    private final int[] navViewIds = {R.id.NavShortcuts, R.id.NavContainers, R.id.NavControls, R.id.NavSettings, R.id.NavAbout};
+    private final int[] navItemIds = {R.id.menu_item_shortcuts, R.id.menu_item_containers, R.id.menu_item_input_controls, R.id.menu_item_settings, R.id.menu_item_about};
     public final PreloaderDialog preloaderDialog = new PreloaderDialog(this);
     private boolean editInputControls = false;
     private int selectedProfileId;
@@ -53,13 +52,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        drawerLayout = findViewById(R.id.DrawerLayout);
-        NavigationView navigationView = findViewById(R.id.NavigationView);
-        navigationView.setNavigationItemSelectedListener(this);
+        for (int i = 0; i < navViewIds.length; i++) {
+            final int itemId = navItemIds[i];
+            findViewById(navViewIds[i]).setOnClickListener((v) -> onNavigationItemSelected(itemId));
+        }
 
         setSupportActionBar(findViewById(R.id.Toolbar));
         ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayHomeAsUpEnabled(false);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
@@ -67,18 +67,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         editInputControls = intent.getBooleanExtra("edit_input_controls", false);
         if (editInputControls) {
             selectedProfileId = intent.getIntExtra("selected_profile_id", 0);
+            actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeAsUpIndicator(R.drawable.icon_action_bar_back);
-            onNavigationItemSelected(navigationView.getMenu().findItem(R.id.menu_item_input_controls));
-            navigationView.setCheckedItem(R.id.menu_item_input_controls);
+            findViewById(R.id.BottomBar).setVisibility(View.GONE);
+            onNavigationItemSelected(R.id.menu_item_input_controls);
         }
         else {
             boolean showShortcutsFirst = preferences.getBoolean("show_shortcuts_first", false);
             int selectedMenuItemId = intent.getIntExtra("selected_menu_item_id", 0);
             int menuItemId = selectedMenuItemId > 0 ? selectedMenuItemId : (showShortcutsFirst ? R.id.menu_item_shortcuts : R.id.menu_item_containers);
 
-            actionBar.setHomeAsUpIndicator(R.drawable.icon_action_bar_menu);
-            onNavigationItemSelected(navigationView.getMenu().findItem(menuItemId));
-            navigationView.setCheckedItem(menuItemId);
+            onNavigationItemSelected(menuItemId);
             if (!requestAppPermissions()) RootFSInstaller.installIfNeeded(this);
 
             int containerId = intent.getIntExtra("container_id", 0);
@@ -137,6 +136,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
 
+        if (!editInputControls) setSelectedNavItem(R.id.menu_item_containers);
         showFragment(new ContainersFragment());
     }
 
@@ -172,20 +172,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     BaseFileManagerFragment fileManagerFragment = (BaseFileManagerFragment)currentFragment;
                     if (fileManagerFragment.onOptionsMenuClicked()) return true;
                 }
-                drawerLayout.openDrawer(GravityCompat.START);
             }
             return true;
         }
     }
 
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+    public void setSelectedNavItem(int itemId) {
+        for (int i = 0; i < navItemIds.length; i++) {
+            findViewById(navViewIds[i]).setSelected(navItemIds[i] == itemId);
+        }
+    }
+
+    public boolean onNavigationItemSelected(int itemId) {
         FragmentManager fragmentManager = getSupportFragmentManager();
         if (fragmentManager.getBackStackEntryCount() > 0) {
             fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         }
 
-        switch (item.getItemId()) {
+        if (itemId != R.id.menu_item_about) setSelectedNavItem(itemId);
+
+        switch (itemId) {
             case R.id.menu_item_shortcuts:
                 preferences.edit().putBoolean("show_shortcuts_first", true).apply();
                 showFragment(new ShortcutsFragment());
@@ -213,7 +219,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             .replace(R.id.FLFragmentContainer, fragment)
             .commit();
 
-        drawerLayout.closeDrawer(GravityCompat.START);
         currentFragment = fragment;
     }
 }

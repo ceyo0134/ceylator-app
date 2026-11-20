@@ -197,8 +197,17 @@ public class SettingsFragment extends Fragment {
         final SeekBar sbCursorSize = view.findViewById(R.id.SBCursorSize);
         sbCursorSize.setValue(preferences.getFloat("cursor_scale", 1.0f) * 100);
 
-        final SeekBar sbRenderResolution = view.findViewById(R.id.SBRenderResolution);
-        sbRenderResolution.setValue(preferences.getInt("render_resolution_scale", 100));
+        final Spinner sRenderResolution = view.findViewById(R.id.SRenderResolution);
+        final int[] resolutionHeights = {0, 1080, 720, 480, 360, 240, 144};
+        String[] resolutionLabels = new String[resolutionHeights.length];
+        for (int i = 0; i < resolutionHeights.length; i++) {
+            resolutionLabels[i] = resolutionHeights[i] == 0 ? getString(R.string.resolution_original) : resolutionHeights[i]+"p";
+        }
+        sRenderResolution.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_dropdown_item, resolutionLabels));
+        int savedResolution = preferences.getInt("render_resolution_p", 0);
+        for (int i = 0; i < resolutionHeights.length; i++) {
+            if (resolutionHeights[i] == savedResolution) sRenderResolution.setSelection(i);
+        }
 
         final CheckBox cbPixelatedScaling = view.findViewById(R.id.CBPixelatedScaling);
         cbPixelatedScaling.setChecked(preferences.getBoolean("pixelated_scaling", true));
@@ -237,7 +246,8 @@ public class SettingsFragment extends Fragment {
             editor.putFloat("cursor_speed", sbCursorSpeed.getValue() / 100.0f);
             editor.putFloat("cursor_scale", sbCursorSize.getValue() / 100.0f);
             editor.putInt("cursor_color", cpvCursorColor.getColor());
-            editor.putInt("render_resolution_scale", Math.round(sbRenderResolution.getValue()));
+            editor.putInt("render_resolution_p", resolutionHeights[sRenderResolution.getSelectedItemPosition()]);
+            editor.remove("render_resolution_scale");
             editor.putBoolean("pixelated_scaling", cbPixelatedScaling.isChecked());
             editor.putBoolean("enable_wine_debug", cbEnableWineDebug.isChecked());
             editor.putInt("box64_logs", sBox64Logs.getSelectedItemPosition());

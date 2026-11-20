@@ -24,14 +24,10 @@
                         android:layout_height="wrap_content"
                         android:text="@string/render_resolution"/>
 
-                    <com.winlator.widget.SeekBar
-                        android:id="@+id/SBRenderResolution"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:suffix="%"
-                        app:step="5"
-                        app:minValue="15"
-                        app:maxValue="100" />
+                    <Spinner
+                        android:id="@+id/SRenderResolution"
+                        style="@style/ComboBox"
+                        android:layout_marginTop="4dp" />
 
                     <TextView
                         android:layout_width="match_parent"

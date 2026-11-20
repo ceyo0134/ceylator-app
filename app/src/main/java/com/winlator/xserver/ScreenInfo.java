@@ -5,10 +5,15 @@ import android.util.Rational;
 import com.winlator.math.Mathf;
 
 public class ScreenInfo {
-    public static final short MIN_WIDTH = 320;
-    public static final short MIN_HEIGHT = 160;
+    public static short MIN_WIDTH = 320;
+    public static short MIN_HEIGHT = 160;
     public final short width;
     public final short height;
+
+    public static void adaptMinSize(ScreenInfo screenInfo) {
+        MIN_WIDTH = (short)Math.min(320, screenInfo.width / 2);
+        MIN_HEIGHT = (short)Math.min(160, screenInfo.height / 2);
+    }
 
     public ScreenInfo(String value) {
         String[] parts = value.split("x");

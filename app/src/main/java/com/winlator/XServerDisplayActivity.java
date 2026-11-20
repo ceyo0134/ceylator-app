@@ -149,7 +149,7 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
 
         final PreloaderDialog preloaderDialog = new PreloaderDialog(this);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean pixelatedScaling = preferences.getBoolean("pixelated_scaling", true) && preferences.getInt("render_resolution_scale", 100) < 100;
+        boolean pixelatedScaling = preferences.getBoolean("pixelated_scaling", true) && preferences.getInt("render_resolution_p", 0) > 0;
         Texture.setDefaultFilter(pixelatedScaling ? android.opengl.GLES20.GL_NEAREST : android.opengl.GLES20.GL_LINEAR);
         boolean useAndroidClipboardOnWine = preferences.getBoolean("use_android_clipboard_on_wine", false);
         clipboardManager = useAndroidClipboardOnWine ? (ClipboardManager)getSystemService(CLIPBOARD_SERVICE) : null;
@@ -1047,13 +1047,17 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
             base = new ScreenInfo(width - (width % 2), height - (height % 2));
         }
 
-        int scalePercent = preferences.getInt("render_resolution_scale", 100);
-        if (scalePercent >= 100) return base;
+        int targetHeight = preferences.getInt("render_resolution_p", 0);
+        if (targetHeight <= 0 || targetHeight >= base.height) {
+            ScreenInfo.adaptMinSize(base);
+            return base;
+        }
 
-        float scale = Math.max(scalePercent, 10) / 100.0f;
-        int width = Math.max(ScreenInfo.MIN_WIDTH, Math.round(base.width * scale / 2.0f) * 2);
-        int height = Math.max(ScreenInfo.MIN_HEIGHT, Math.round(base.height * scale / 2.0f) * 2);
-        return new ScreenInfo(width, height);
+        int height = targetHeight - (targetHeight % 2);
+        int width = Math.round(((float)base.width / base.height) * height / 2.0f) * 2;
+        ScreenInfo result = new ScreenInfo(width, height);
+        ScreenInfo.adaptMinSize(result);
+        return result;
     }
 
     public String getWinComponents() {

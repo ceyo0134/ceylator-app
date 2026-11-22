@@ -58,6 +58,7 @@ import com.winlator.core.TarCompressorUtils;
 import com.winlator.core.Win32AppWorkarounds;
 import com.winlator.core.WineInfo;
 import com.winlator.core.WineInstaller;
+import com.winlator.core.CompatibilityProfile;
 import com.winlator.core.WineRegistryEditor;
 import com.winlator.core.WineStartMenuCreator;
 import com.winlator.core.WineThemeManager;
@@ -446,6 +447,10 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
         String appVersion = String.valueOf(AppUtils.getVersionCode(this));
         String rfsVersion = String.valueOf(rootFS.getVersion());
         boolean containerDataChanged = false;
+
+        // Random-but-stable graphics card + system info for this container (never overrides a card the user picked)
+        CompatibilityProfile.applyGpu(this, container, dxwrapper, dxwrapperConfig[0]);
+        CompatibilityProfile.applyRegistry(this, container, new File(rootFS.getRootDir(), RootFS.WINEPREFIX+"/system.reg"));
 
         boolean wineprefixWasUpdated = WineUtils.isWineprefixWasUpdated(container);
         if (!container.getExtra("appVersion").equals(appVersion) || !container.getExtra("rfsVersion").equals(rfsVersion) || wineprefixWasUpdated) {
@@ -1050,6 +1055,14 @@ public class XServerDisplayActivity extends AppCompatActivity implements Navigat
         float deviceAspect = requested.width >= requested.height ? longSide / shortSide : shortSide / longSide;
         float pixels = (float)requested.width * requested.height;
         int height = (int)Math.round(Math.sqrt(pixels / deviceAspect));
+
+        // Games often refuse to start when the screen is smaller than the mode they ask for (e.g. 800x600 turning
+        // into 1030x467), so the short side never drops below what was requested.
+        boolean landscape = requested.width >= requested.height;
+        int requestedShortSide = Math.min(requested.width, requested.height);
+        int currentShortSide = landscape ? height : (int)Math.round(height * deviceAspect);
+        if (currentShortSide < requestedShortSide) height = (int)Math.round(landscape ? requestedShortSide : requestedShortSide / deviceAspect);
+
         int width = (int)Math.round(height * deviceAspect);
         height -= height % 2;
         width -= width % 2;

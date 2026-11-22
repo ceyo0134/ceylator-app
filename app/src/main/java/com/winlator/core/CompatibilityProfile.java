@@ -22,6 +22,7 @@ public abstract class CompatibilityProfile {
     private static final String EXTRA_GPU = "compatGpu";
     private static final String EXTRA_PC = "compatPc";
     private static final String EXTRA_REGISTRY = "compatRegistry";
+    private static final String EXTRA_COMPUTER_NAME = "compatComputerName";
 
     // Newer cards only: very old ones (RIVA, GeForce 256...) make modern games pick wrong code paths.
     private static final String[] PREFERRED = {"GTX 9", "GTX 10", "GTX 16", "RTX", "Radeon RX", "Radeon R9"};
@@ -61,6 +62,20 @@ public abstract class CompatibilityProfile {
         catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /** Windows-style computer name (DESKTOP-XXXXXXX), chosen once per container so it stays stable. */
+    private static String getOrCreateComputerName(Container container) {
+        String name = container.getExtra(EXTRA_COMPUTER_NAME);
+        if (name.matches("DESKTOP-[A-Z0-9]{7}")) return name;
+
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder("DESKTOP-");
+        for (int i = 0; i < 7; i++) sb.append(chars.charAt(random.nextInt(chars.length())));
+        name = sb.toString();
+        container.putExtra(EXTRA_COMPUTER_NAME, name);
+        return name;
     }
 
     /** Returns this container's GPU, choosing a random one the first time. Returns null if the card list can't be read. */
@@ -130,7 +145,8 @@ public abstract class CompatibilityProfile {
                 container.putExtra(EXTRA_PC, pcIndex);
             }
 
-            String stamp = pcIndex+"-"+gpuName;
+            String computerName = getOrCreateComputerName(container);
+            String stamp = pcIndex+"-"+gpuName+"-"+computerName;
             if (stamp.equals(container.getExtra(EXTRA_REGISTRY)) || !systemRegFile.isFile()) return;
 
             String[] pc = PCS[Integer.parseInt(pcIndex) % PCS.length];
@@ -141,6 +157,11 @@ public abstract class CompatibilityProfile {
                 registryEditor.setStringValue(key, "BIOSVendor", pc[2]);
                 registryEditor.setStringValue(key, "BIOSVersion", pc[3]);
                 registryEditor.setStringValue(key, "BIOSReleaseDate", pc[4]);
+
+                // Wine copies this value into the (volatile) ActiveComputerName key every time it starts
+                registryEditor.setStringValue("System\\ControlSet001\\Control\\ComputerName\\ComputerName", "ComputerName", computerName);
+                registryEditor.setStringValue("System\\ControlSet001\\Services\\Tcpip\\Parameters", "Hostname", computerName);
+                registryEditor.setStringValue("System\\ControlSet001\\Services\\Tcpip\\Parameters", "NV Hostname", computerName);
             }
 
             container.putExtra(EXTRA_REGISTRY, stamp);
